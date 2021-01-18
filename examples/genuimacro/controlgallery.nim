@@ -14,6 +14,7 @@ var
   spinner: ptr WxSpinCtrl
   slider: ptr WxSlider
   gauge: ptr WxGauge
+  textCtrl: ptr WxTextCtrl
 
 # Callbacks needs to be {.cdecl.} to be passed to the bind function in wxWidgets
 proc spinnerCallback(e: var WxSpinEvent) {.cdecl.} =
@@ -26,14 +27,18 @@ proc sliderCallback(e: var WxCommandEvent) {.cdecl.} =
   spinner.setValue(val)
   gauge.setValue(val)
 
+proc buttonClicked(e: var WxCommandEvent) {.cdecl.} =
+  var text = $textCtrl.getValue()
+  echo text
+
 # Generate the GUI
 genui:
   mainFrame % Frame(title = "Hello World"):
     Panel | Boxsizer(orient = wxHorizontal):
       StaticBox(label = "Basic controls")[proportion = 1] | StaticBoxSizer(orient = wxVertical):
-        Button: "Button"
+        Button -> (wxEVT_BUTTON, buttonClicked): "Button"
         CheckBox: "Checkbox"
-        TextCtrl(value = "Entry")
+        textCtrl % TextCtrl(value = "Entry")
         StaticText: "Label"
       Panel[proportion = 2] | Boxsizer(orient = wxVertical):
         StaticBox(label = "Numbers") | StaticBoxSizer(orient = wxVertical):
