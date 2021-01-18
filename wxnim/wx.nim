@@ -20,6 +20,12 @@ include private/string
 converter toWxString*(s: string): WxString =
   result = constructWxString(cstring(s), s.len)
 
+const strconvHeader = currentSourcePath().splitPath.head & "/strconv.h"
+proc convertStr*(s: cstring): cstring {.cdecl, importcpp: "convertStr(@)", header: strconvHeader}
+
+proc `$`* (wxStr: WxString): string =
+  result = $convertStr(wxStr.cStr().asCString())
+
 converter wxOrientationToClong*(inType:WxOrientation): clong = cast[clong](inType)
 
 converter wxStretchToCint*(inType:WxStretch): cint = cast[cint](inType)
